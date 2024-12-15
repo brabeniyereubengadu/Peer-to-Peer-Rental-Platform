@@ -5,8 +5,18 @@ authors = []
 telemetry = true
 cache_dir = './.cache'
 requirements = []
+[contracts.booking-system]
+path = 'contracts/booking-system.clar'
+clarity_version = 2
+epoch = 2.5
+
 [contracts.rental-nft]
 path = 'contracts/rental-nft.clar'
+clarity_version = 2
+epoch = 2.5
+
+[contracts.reputation-system]
+path = 'contracts/reputation-system.clar'
 clarity_version = 2
 epoch = 2.5
 [repl.analysis]
