@@ -60,6 +60,11 @@ plan:
             path: contracts/booking-system.clar
             clarity-version: 2
         - emulated-contract-publish:
+            contract-name: iot-integration
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/iot-integration.clar
+            clarity-version: 2
+        - emulated-contract-publish:
             contract-name: reputation-system
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/reputation-system.clar
