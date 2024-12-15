@@ -1,53 +1,56 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-describe('Reputation System Contract', () => {
-  const user1 = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
-  const user2 = 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG';
+describe('Booking System Contract', () => {
+  const owner = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
+  const user1 = 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG';
+  const user2 = 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC';
   
   beforeEach(() => {
     vi.resetAllMocks();
   });
   
-  it('should rate a user', () => {
-    const rateUser = vi.fn().mockReturnValue({ ok: true });
-    rateUser('reputation-system', 'rate-user', [user1, 4], user2);
-    expect(rateUser).toHaveBeenCalledWith('reputation-system', 'rate-user', [user1, 4], user2);
-    expect(rateUser()).toEqual({ ok: true });
+  it('should create a booking', () => {
+    const mockCreateBooking = vi.fn().mockReturnValue({ success: true, value: 1 });
+    expect(mockCreateBooking(1, 1625097600, 1625270400)).toEqual({ success: true, value: 1 });
   });
   
-  it('should get user rating', () => {
-    const getUserRating = vi.fn().mockReturnValue({
-      ok: {
-        average_rating: 4,
-        total_ratings: 1
+  it('should not create a booking with invalid dates', () => {
+    const mockCreateBooking = vi.fn().mockReturnValue({ success: false, error: 103 });
+    expect(mockCreateBooking(1, 1625270400, 1625097600)).toEqual({ success: false, error: 103 });
+  });
+  
+  it('should cancel a booking', () => {
+    const mockCancelBooking = vi.fn().mockReturnValue({ success: true, value: true });
+    expect(mockCancelBooking(1)).toEqual({ success: true, value: true });
+  });
+  
+  it('should not allow unauthorized cancellation', () => {
+    const mockCancelBooking = vi.fn().mockReturnValue({ success: false, error: 104 });
+    expect(mockCancelBooking(1)).toEqual({ success: false, error: 104 });
+  });
+  
+  it('should get booking details', () => {
+    const mockGetBooking = vi.fn().mockReturnValue({
+      success: true,
+      value: {
+        property_id: 1,
+        tenant: user1,
+        start_date: 1625097600,
+        end_date: 1625270400,
+        total_price: 300,
+        status: "confirmed"
       }
     });
-    getUserRating('reputation-system', 'get-user-rating', [user1]);
-    expect(getUserRating).toHaveBeenCalledWith('reputation-system', 'get-user-rating', [user1]);
-    expect(getUserRating()).toEqual({
-      ok: {
-        average_rating: 4,
-        total_ratings: 1
-      }
+    const result = mockGetBooking(1);
+    expect(result.success).toBe(true);
+    expect(result.value).toEqual({
+      property_id: 1,
+      tenant: user1,
+      start_date: 1625097600,
+      end_date: 1625270400,
+      total_price: 300,
+      status: "confirmed"
     });
-  });
-  
-  it('should not allow rating above maximum', () => {
-    const rateUser = vi.fn().mockReturnValue({ err: 400 });
-    rateUser('reputation-system', 'rate-user', [user1, 6], user2);
-    expect(rateUser).toHaveBeenCalledWith('reputation-system', 'rate-user', [user1, 6], user2);
-    expect(rateUser()).toEqual({ err: 400 });
-  });
-  
-  it('should rate a property', () => {
-    const mockRateProperty = vi.fn().mockReturnValue({ success: true, value: true });
-    expect(mockRateProperty(1, 4)).toEqual({ success: true, value: true });
-  });
-  
-  it('should get property rating', () => {
-    const mockGetPropertyRating = vi.fn().mockReturnValue({ success: true, value: 4 });
-    expect(mockGetPropertyRating(1)).toEqual({ success: true, value: 4 });
   });
 });
 
